@@ -1,0 +1,70 @@
+# Copy to config.toml (next to the command) or
+# ~/.config/abyss-wallpaper/config.toml
+#
+# Environment overrides:
+#   ABYSS_WALLPAPER_CONFIG  — config file path
+#   ABYSS_WALLPAPER_HOME    — state/cache directory
+
+[general]
+# data_dir = "~/.local/share/abyss-wallpaper"
+update_interval_hours = 24
+max_discoveries_per_source = 12
+max_image_bytes = 12000000
+request_timeout_seconds = 25
+crawl_delay_seconds = 1.0
+respect_robots = true
+user_agent = "AbyssWallpaper/0.1 (+https://github.com/vili-pet/abyss-wallpaper; personal desktop use)"
+dry_run = false
+
+[wallpaper]
+set_wallpaper = true
+prefer_underwater = true
+compose_overlay = true
+overlay_corner = "bottom-left"
+
+[overlay]
+enabled = true
+corner = "bottom-left"
+max_width_ratio = 0.38
+margin = 36
+padding = 22
+opacity = 168
+
+# Each source can be toggled, retargeted, or replaced.
+# kind = noaa | nautilus | schmidt | mbari | rss | wordpress | fixture
+
+[sources.noaa]
+enabled = true
+kind = "noaa"
+url = "https://oceanexplorer.noaa.gov/wp-json/wp/v2/media"
+source_name = "NOAA Ocean Exploration"
+attribution = "Image courtesy of NOAA Ocean Exploration. Public domain U.S. government work."
+
+[sources.nautilus]
+enabled = true
+kind = "nautilus"
+url = "https://nautiluslive.org/gallery"
+source_name = "Nautilus Live / Ocean Exploration Trust"
+attribution = "Ocean Exploration Trust / Nautilus Live."
+max_albums = 3
+
+[sources.schmidt]
+enabled = true
+kind = "schmidt"
+url = "https://schmidtocean.org/feed/"
+source_name = "Schmidt Ocean Institute"
+attribution = "Schmidt Ocean Institute."
+
+[sources.mbari]
+enabled = true
+kind = "mbari"
+url = "https://www.mbari.org/feed/"
+source_name = "MBARI"
+attribution = "© MBARI. Personal/educational use; review MBARI terms before redistribution."
+
+# Used automatically when live sources fail, or with --offline.
+[sources.fixture]
+enabled = true
+kind = "fixture"
+fallback_only = true
+source_name = "Local fixture"

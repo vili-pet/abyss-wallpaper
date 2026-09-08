@@ -1,0 +1,26 @@
+[
+  {
+    "id": "fixture-caulophacus",
+    "title": "Caulophacus stalked sponge",
+    "page_url": "https://example.org/abyss-wallpaper/fixture/caulophacus",
+    "image_url": "generated://abyss/caulophacus",
+    "published": "2026-09-01T12:00:00+00:00",
+    "depth_m": 1378,
+    "latitude": -14.271,
+    "longitude": -170.132,
+    "attribution": "Locally generated sample illustration. Not an official expedition image.",
+    "summary": "A tall glass sponge on a rocky seamount, used for offline preview and tests."
+  },
+  {
+    "id": "fixture-magnapinna",
+    "title": "Bigfin squid (Magnapinna)",
+    "page_url": "https://example.org/abyss-wallpaper/fixture/magnapinna",
+    "image_url": "generated://abyss/magnapinna",
+    "published": "2026-08-20T16:00:00+00:00",
+    "depth_m": 3277,
+    "latitude": 35.720,
+    "longitude": -122.720,
+    "attribution": "Locally generated sample illustration. Not an official expedition image.",
+    "summary": "A stylized deep-sea squid silhouette for dry-run and packaging demos."
+  }
+]

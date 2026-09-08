@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0"
+  xmlns:content="http://purl.org/rss/1.0/modules/content/"
+  xmlns:dc="http://purl.org/dc/elements/1.1/">
+  <channel>
+    <title>MBARI</title>
+    <item>
+      <title>MBARI researchers film chance encounter with a rare deep-sea bigfin squid</title>
+      <link>https://www.mbari.org/news/bigfin-squid/</link>
+      <guid>https://www.mbari.org/?p=140948</guid>
+      <pubDate>Wed, 02 Sep 2026 16:00:55 +0000</pubDate>
+      <description><![CDATA[MBARI scientists encountered the rarely seen deep-sea bigfin squid (Magnapinna sp.).]]></description>
+      <content:encoded><![CDATA[
+        <p>The team was surveying the abyssal seafloor near Davidson Seamount with ROV Doc Ricketts, approximately 3,277 meters (10,751 feet) underwater, 35.720 N, 122.720 W.</p>
+        <figure>
+          <img src="https://www.mbari.org/wp-content/uploads/SeamountHotspotsExpedition_Magnapinna_1150.jpg" alt="bigfin squid" />
+          <figcaption>Image: Steve Litvin © 2026 MBARI</figcaption>
+        </figure>
+        <img src="https://www.mbari.org/wp-content/uploads/lab-work-scientist.jpg" alt="scientist in the lab" />
+      ]]></content:encoded>
+    </item>
+    <item>
+      <title>Policy dialogue at Thomas Mann House</title>
+      <link>https://www.mbari.org/news/policy/</link>
+      <pubDate>Mon, 31 Aug 2026 16:30:50 +0000</pubDate>
+      <description>A roundtable about ocean science and policy.</description>
+    </item>
+  </channel>
+</rss>

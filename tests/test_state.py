@@ -1,4 +1,4 @@
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from abyss_wallpaper.models import AppState, Discovery
@@ -22,7 +22,7 @@ def test_corrupt_state_is_reset(tmp_path: Path) -> None:
 
 def test_skip_same_hash_and_interval(tmp_path: Path) -> None:
     store = StateStore(tmp_path / "state.json")
-    now = datetime(2026, 9, 8, tzinfo=timezone.utc)
+    now = datetime(2026, 9, 8, tzinfo=UTC)
     state = AppState(last_update=now, last_image_hash="same")
     assert store.should_skip(state, "same", timedelta(hours=24), now=now) == "image already applied"
     later = now + timedelta(hours=3)

@@ -5,9 +5,9 @@ from __future__ import annotations
 import hashlib
 import html
 import re
-from datetime import datetime, timezone
+from collections.abc import Iterable
+from datetime import UTC, datetime
 from email.utils import parsedate_to_datetime
-from typing import Iterable
 from urllib.parse import urlparse
 
 from abyss_wallpaper.models import Coordinates, Discovery
@@ -17,8 +17,8 @@ _WS_RE = re.compile(r"\s+")
 _DEPTH_RE = re.compile(
     r"""
     (?:at\s+a\s+depth\s+of\s+|depth(?:s)?(?:\s+of)?\s+|approximately\s+)?
-    (?P<value>\d{2,5}(?:,\d{3})*(?:\.\d+)?)
-    \s*(?P<unit>m|meters?|metres?|ft|feet)
+    (?P<value>\d{1,3}(?:,\d{3})+(?:\.\d+)?|\d{2,5}(?:\.\d+)?)
+    \s*(?P<unit>meters?|metres?|m(?![a-z])|feet|ft)\b
     """,
     re.IGNORECASE | re.VERBOSE,
 )
@@ -88,8 +88,8 @@ def parse_datetime(value: str | None) -> datetime | None:
     try:
         parsed = datetime.fromisoformat(raw.replace("Z", "+00:00"))
         if parsed.tzinfo is None:
-            return parsed.replace(tzinfo=timezone.utc)
-        return parsed.astimezone(timezone.utc)
+            return parsed.replace(tzinfo=UTC)
+        return parsed.astimezone(UTC)
     except ValueError:
         pass
     try:
@@ -97,8 +97,8 @@ def parse_datetime(value: str | None) -> datetime | None:
     except (TypeError, ValueError, IndexError):
         return None
     if parsed.tzinfo is None:
-        return parsed.replace(tzinfo=timezone.utc)
-    return parsed.astimezone(timezone.utc)
+        return parsed.replace(tzinfo=UTC)
+    return parsed.astimezone(UTC)
 
 
 def parse_depth_m(text: str | None) -> float | None:
@@ -114,7 +114,7 @@ def parse_depth_m(text: str | None) -> float | None:
         number = float(match.group("value").replace(",", ""))
         unit = match.group("unit").lower()
         if unit.startswith("ft") or unit == "feet":
-            meters = number * 0.3048
+            meters = round(number * 0.3048, 1)
             if 20 <= meters <= 12000:
                 feet_values.append(meters)
         elif 20 <= number <= 12000:

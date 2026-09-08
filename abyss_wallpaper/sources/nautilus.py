@@ -9,7 +9,13 @@ from bs4 import Tag
 
 from abyss_wallpaper.config import SourceConfig
 from abyss_wallpaper.http import HttpClient
-from abyss_wallpaper.metadata import parse_coordinates, parse_datetime, parse_depth_m, stable_id, strip_html
+from abyss_wallpaper.metadata import (
+    parse_coordinates,
+    parse_datetime,
+    parse_depth_m,
+    stable_id,
+    strip_html,
+)
 from abyss_wallpaper.models import Discovery
 from abyss_wallpaper.sources.base import source_attribution, source_name
 from abyss_wallpaper.sources.htmlutil import absolutize, parse_html, unwrap_drupal_style

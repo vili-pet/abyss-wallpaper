@@ -4,15 +4,11 @@ from __future__ import annotations
 
 import os
 import sys
+import tomllib
+from collections.abc import Mapping
 from dataclasses import dataclass, field
 from pathlib import Path
-from typing import Any, Mapping
-
-if sys.version_info >= (3, 11):
-    import tomllib
-else:  # pragma: no cover
-    import tomli as tomllib  # type: ignore[no-redef]
-
+from typing import Any
 
 DEFAULT_USER_AGENT = (
     "AbyssWallpaper/0.1 (+https://github.com/vili-pet/abyss-wallpaper; personal desktop use)"
@@ -223,9 +219,10 @@ def _load_sources(raw: Mapping[str, Any] | None) -> list[SourceConfig]:
 
 def config_from_mapping(data: Mapping[str, Any] | None = None) -> AppConfig:
     payload = data or {}
-    general = payload.get("general") if isinstance(payload.get("general"), Mapping) else payload
-    general = general or {}
-    wallpaper = payload.get("wallpaper") if isinstance(payload.get("wallpaper"), Mapping) else {}
+    general_raw = payload.get("general")
+    general: Mapping[str, Any] = general_raw if isinstance(general_raw, Mapping) else payload
+    wallpaper_raw = payload.get("wallpaper")
+    wallpaper: Mapping[str, Any] = wallpaper_raw if isinstance(wallpaper_raw, Mapping) else {}
     cfg = AppConfig()
     data_dir = general.get("data_dir")
     if data_dir:

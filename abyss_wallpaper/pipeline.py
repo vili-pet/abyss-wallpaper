@@ -4,7 +4,7 @@ from __future__ import annotations
 
 import logging
 from dataclasses import dataclass
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from abyss_wallpaper.cache import ImageCache
@@ -169,7 +169,7 @@ class WallpaperPipeline:
                 state=state,
             )
         self.setter.set_wallpaper(composed_path)
-        state = self.store.record(state, discovery, digest, composed_path, now=now or datetime.now(timezone.utc))
+        state = self.store.record(state, discovery, digest, composed_path, now=now or datetime.now(UTC))
         return UpdateResult(
             action="applied",
             discovery=discovery,

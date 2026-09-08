@@ -7,7 +7,13 @@ from datetime import datetime
 
 from abyss_wallpaper.config import SourceConfig
 from abyss_wallpaper.http import HttpClient
-from abyss_wallpaper.metadata import parse_coordinates, parse_datetime, parse_depth_m, stable_id, strip_html
+from abyss_wallpaper.metadata import (
+    parse_coordinates,
+    parse_datetime,
+    parse_depth_m,
+    stable_id,
+    strip_html,
+)
 from abyss_wallpaper.models import Discovery
 from abyss_wallpaper.sources.base import source_attribution, source_name
 from abyss_wallpaper.sources.htmlutil import extract_images
@@ -96,7 +102,9 @@ def _item_to_discovery(
     if not images:
         return None
     image_url, caption = _best_image(images, title, description)
-    text = " ".join(part for part in (title, caption, strip_html(content)) if part)
+    text = " ".join(
+        part for part in (title, caption, strip_html(description), strip_html(content)) if part
+    )
     return Discovery(
         id=stable_id(source_id, guid, image_url),
         source_id=source_id,

@@ -3,7 +3,7 @@
 from __future__ import annotations
 
 import json
-from datetime import datetime, timedelta, timezone
+from datetime import UTC, datetime, timedelta
 from pathlib import Path
 
 from abyss_wallpaper.models import AppState, Discovery
@@ -41,7 +41,7 @@ class StateStore:
             return None
         if state.last_image_hash == image_hash:
             return "image already applied"
-        current = now or datetime.now(timezone.utc)
+        current = now or datetime.now(UTC)
         if state.last_update is not None:
             elapsed = current - state.last_update
             if elapsed < interval:
@@ -59,7 +59,7 @@ class StateStore:
         *,
         now: datetime | None = None,
     ) -> AppState:
-        stamp = now or datetime.now(timezone.utc)
+        stamp = now or datetime.now(UTC)
         entry = {
             "id": discovery.id,
             "title": discovery.display_title(),

@@ -1,4 +1,4 @@
-from datetime import datetime, timezone
+from datetime import UTC, datetime
 from pathlib import Path
 
 from abyss_wallpaper.config import AppConfig, SourceConfig
@@ -45,7 +45,7 @@ def test_live_sources_with_fixtures(
     pipe = WallpaperPipeline(live_config, http=client, setter=PreviewWallpaperSetter())
     items = pipe.fetch_discoveries()
     assert {item.source_id for item in items} >= {"noaa", "mbari", "schmidt", "nautilus"}
-    result = pipe.update(force=True, apply_wallpaper=False, now=datetime(2026, 9, 8, tzinfo=timezone.utc))
+    result = pipe.update(force=True, apply_wallpaper=False, now=datetime(2026, 9, 8, tzinfo=UTC))
     assert result.discovery is not None
     assert result.wallpaper_path is not None
     assert Path(result.wallpaper_path).exists()

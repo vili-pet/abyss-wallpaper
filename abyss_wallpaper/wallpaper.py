@@ -32,7 +32,7 @@ class WindowsWallpaperSetter:
         spi_setdeskwallpaper = 20
         update_ini = 0x01
         send_change = 0x02
-        ok = ctypes.windll.user32.SystemParametersInfoW(  # type: ignore[attr-defined]
+        ok = ctypes.windll.user32.SystemParametersInfoW(
             spi_setdeskwallpaper, 0, resolved, update_ini | send_change
         )
         if not ok:
@@ -76,7 +76,8 @@ class LinuxWallpaperSetter:
                 f'd.currentConfigGroup=Array("Wallpaper","org.kde.image","General");'
                 f'd.writeConfig("Image","{uri}"); }}'
             )
-            if _try(["qdbus", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell.evaluateScript", script], errors):
+            kde = ["qdbus", "org.kde.plasmashell", "/PlasmaShell", "org.kde.PlasmaShell.evaluateScript", script]
+            if _try(kde, errors):
                 return
         if "xfce" in desktop:
             if _try(

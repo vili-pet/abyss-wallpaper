@@ -6,6 +6,7 @@ import json
 from importlib import resources
 from io import BytesIO
 from pathlib import Path
+from typing import Any
 
 from PIL import Image, ImageDraw
 
@@ -57,23 +58,46 @@ def generate_placeholder_image(title: str, width: int = 1920, height: int = 1080
     return buffer.getvalue()
 
 
-def _load_records(config: SourceConfig) -> list[dict[str, object]]:
+def _as_records(payload: object) -> list[dict[str, Any]]:
+    if not isinstance(payload, list):
+        return []
+    return [item for item in payload if isinstance(item, dict)]
+
+
+def _as_number(value: object) -> float | None:
+    if isinstance(value, bool):
+        return None
+    if isinstance(value, (int, float)):
+        return float(value)
+    if isinstance(value, str):
+        try:
+            return float(value)
+        except ValueError:
+            return None
+    return None
+
+
+def _load_records(config: SourceConfig) -> list[dict[str, Any]]:
     explicit = config.extra.get("path")
     if explicit:
-        return json.loads(Path(str(explicit)).read_text(encoding="utf-8"))
+        return _as_records(json.loads(Path(str(explicit)).read_text(encoding="utf-8")))
     data = resources.files("abyss_wallpaper.data").joinpath("sample_discoveries.json")
-    return json.loads(data.read_text(encoding="utf-8"))
+    return _as_records(json.loads(data.read_text(encoding="utf-8")))
 
 
-def _record_to_discovery(record: dict[str, object], source_id: str, source_name: str) -> Discovery:
+def _record_to_discovery(record: dict[str, Any], source_id: str, source_name: str) -> Discovery:
     coords = record.get("coordinates")
     coordinates = None
     if isinstance(coords, dict):
-        coordinates = Coordinates(float(coords["latitude"]), float(coords["longitude"]))
-    elif "latitude" in record and "longitude" in record:
-        coordinates = parse_coordinates(f"{record['latitude']}, {record['longitude']}")
-        if coordinates is None:
-            coordinates = Coordinates(float(record["latitude"]), float(record["longitude"]))
+        lat = _as_number(coords.get("latitude"))
+        lon = _as_number(coords.get("longitude"))
+        if lat is not None and lon is not None:
+            coordinates = Coordinates(lat, lon)
+    else:
+        lat = _as_number(record.get("latitude"))
+        lon = _as_number(record.get("longitude"))
+        if lat is not None and lon is not None:
+            coordinates = parse_coordinates(f"{lat}, {lon}") or Coordinates(lat, lon)
     image_url = str(record.get("image_url") or "generated://abyss/default")
     return Discovery(
         id=str(record.get("id") or stable_id(source_id, str(record.get("title")))),
@@ -83,7 +107,7 @@ def _record_to_discovery(record: dict[str, object], source_id: str, source_name:
         page_url=str(record.get("page_url") or ""),
         image_url=image_url,
         published=parse_datetime(str(record.get("published") or "")),
-        depth_m=float(record["depth_m"]) if record.get("depth_m") is not None else None,
+        depth_m=_as_number(record.get("depth_m")),
         coordinates=coordinates,
         attribution=str(record.get("attribution") or "Locally generated sample illustration."),
         summary=str(record.get("summary") or ""),

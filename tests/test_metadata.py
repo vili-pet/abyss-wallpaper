@@ -18,7 +18,11 @@ def test_parse_depth_prefers_ocean_depth_over_organism_height() -> None:
 
 
 def test_parse_depth_from_feet() -> None:
-    assert parse_depth_m("approximately 10,751 feet underwater") == 3276.9048
+    assert parse_depth_m("approximately 10,751 feet underwater") == 3276.9
+
+
+def test_parse_depth_ignores_years_and_org_names() -> None:
+    assert parse_depth_m("Image: Steve Litvin © 2026 MBARI") is None
 
 
 def test_parse_hemisphere_coordinates() -> None:

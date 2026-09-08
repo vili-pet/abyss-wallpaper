@@ -57,8 +57,11 @@ def _overlay_lines(discovery: Discovery) -> list[str]:
     return lines
 
 
-def _font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.ImageFont:
-    names = _FONT_CANDIDATES
+FontT = ImageFont.FreeTypeFont | ImageFont.ImageFont
+
+
+def _font(size: int, bold: bool = False) -> FontT:
+    names: tuple[str, ...] = _FONT_CANDIDATES
     if bold:
         names = ("DejaVuSans-Bold.ttf", *_FONT_CANDIDATES)
     for candidate in names:
@@ -69,7 +72,7 @@ def _font(size: int, bold: bool = False) -> ImageFont.FreeTypeFont | ImageFont.I
     return ImageFont.load_default()
 
 
-def _wrap(draw: ImageDraw.ImageDraw, text: str, font: ImageFont.ImageFont, max_width: int) -> list[str]:
+def _wrap(draw: ImageDraw.ImageDraw, text: str, font: FontT, max_width: int) -> list[str]:
     words = text.split()
     if not words:
         return []
@@ -97,18 +100,18 @@ def _render_panel(
     body_font = _font(max(14, width // 90))
     canvas = Image.new("RGBA", size, (0, 0, 0, 0))
     draw = ImageDraw.Draw(canvas)
-    wrapped: list[tuple[str, ImageFont.ImageFont]] = []
+    wrapped: list[tuple[str, FontT]] = []
     inner_width = max_width - overlay.padding * 2
     for index, line in enumerate(lines):
         font = title_font if index == 0 else body_font
         wrapped.extend((part, font) for part in _wrap(draw, line, font, inner_width))
     line_gap = 8
-    text_height = 0
+    text_height = 0.0
     for text, font in wrapped:
         bbox = draw.textbbox((0, 0), text, font=font)
         text_height += (bbox[3] - bbox[1]) + line_gap
     panel_w = max_width
-    panel_h = text_height + overlay.padding * 2 - line_gap
+    panel_h = int(text_height + overlay.padding * 2 - line_gap)
     left, top = _corner_origin(overlay.corner, width, height, panel_w, panel_h, overlay.margin)
     opacity = max(0, min(255, overlay.opacity))
     draw.rounded_rectangle(
@@ -116,7 +119,7 @@ def _render_panel(
         radius=18,
         fill=(8, 16, 28, opacity),
     )
-    y = top + overlay.padding
+    y = float(top + overlay.padding)
     for text, font in wrapped:
         draw.text((left + overlay.padding, y), text, font=font, fill=(236, 242, 248, 235))
         bbox = draw.textbbox((0, 0), text, font=font)

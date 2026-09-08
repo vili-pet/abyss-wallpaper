@@ -1,10 +1,10 @@
 from abyss_wallpaper.config import SourceConfig
 from abyss_wallpaper.http import MappingHttpClient
+from abyss_wallpaper.sources.htmlutil import unwrap_drupal_style
 from abyss_wallpaper.sources.mbari import MbariSource
 from abyss_wallpaper.sources.nautilus import NautilusSource
 from abyss_wallpaper.sources.noaa import NoaaSource
 from abyss_wallpaper.sources.schmidt import SchmidtSource
-from abyss_wallpaper.sources.htmlutil import unwrap_drupal_style
 
 
 def test_noaa_parser_extracts_depth_and_skips_favicon(http_client: MappingHttpClient) -> None:

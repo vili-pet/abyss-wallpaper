@@ -6,8 +6,8 @@ import argparse
 import json
 import logging
 import sys
+from collections.abc import Sequence
 from pathlib import Path
-from typing import Sequence
 
 from abyss_wallpaper import __version__
 from abyss_wallpaper.config import AppConfig, load_config

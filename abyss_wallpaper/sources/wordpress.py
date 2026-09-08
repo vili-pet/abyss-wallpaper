@@ -85,8 +85,10 @@ def _media_item(
     image_url = str(item.get("source_url") or "")
     if not image_url:
         return None
-    details = item.get("media_details") if isinstance(item.get("media_details"), dict) else {}
-    meta = details.get("image_meta") if isinstance(details.get("image_meta"), dict) else {}
+    raw_details = item.get("media_details")
+    details: dict[str, Any] = raw_details if isinstance(raw_details, dict) else {}
+    raw_meta = details.get("image_meta")
+    meta: dict[str, Any] = raw_meta if isinstance(raw_meta, dict) else {}
     title = _rendered(item.get("title")) or str(meta.get("title") or "") or "Untitled image"
     caption = _rendered(item.get("caption")) or str(meta.get("caption") or "")
     alt = str(item.get("alt_text") or "")
@@ -98,8 +100,10 @@ def _media_item(
     text = " ".join(part for part in (title, caption, alt, credit) if part)
     if any(token in image_url.lower() for token in ("favicon", "logo", "sprite")):
         return None
-    width = details.get("width") if isinstance(details.get("width"), int) else None
-    height = details.get("height") if isinstance(details.get("height"), int) else None
+    raw_width = details.get("width")
+    raw_height = details.get("height")
+    width = raw_width if isinstance(raw_width, int) else None
+    height = raw_height if isinstance(raw_height, int) else None
     return Discovery(
         id=stable_id(source_id, str(item.get("id") or image_url)),
         source_id=source_id,

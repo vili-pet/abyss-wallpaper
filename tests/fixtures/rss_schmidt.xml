@@ -1,0 +1,20 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<rss version="2.0" xmlns:content="http://purl.org/rss/1.0/modules/content/">
+  <channel>
+    <title>Schmidt Ocean Institute</title>
+    <item>
+      <title>First Caribbean-Led Expedition Unveils Rich Ecosystems</title>
+      <link>https://schmidtocean.org/trinidad-tobago-deep-sea/</link>
+      <guid>https://schmidtocean.org/?p=50827</guid>
+      <pubDate>Tue, 25 Aug 2026 12:00:00 +0000</pubDate>
+      <description>The team discovered 25 cold seep ecosystems at a depth of 1,900 meters.</description>
+      <content:encoded><![CDATA[
+        <figure class="wp-caption">
+          <img class="size-large" src="https://schmidtocean.org/wp-content/uploads/FKt260629-S0950-scicam-EelPoutOnSeep-1140x641.jpg" srcset="https://schmidtocean.org/wp-content/uploads/FKt260629-S0950-scicam-EelPoutOnSeep-1140x641.jpg 1140w, https://schmidtocean.org/wp-content/uploads/FKt260629-S0950-scicam-EelPoutOnSeep-2048x1152.jpg 2048w" alt="eelpout on a seep" />
+          <figcaption>ROV SuBastian image of an eelpout at a cold seep. Credit: Schmidt Ocean Institute</figcaption>
+        </figure>
+        <img src="https://schmidtocean.org/wp-content/uploads/award-portrait.jpeg" alt="award portrait" />
+      ]]></content:encoded>
+    </item>
+  </channel>
+</rss>

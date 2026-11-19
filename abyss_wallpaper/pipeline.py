@@ -3,9 +3,13 @@
 from __future__ import annotations
 
 import logging
+from collections.abc import Iterator
 from dataclasses import dataclass
 from datetime import UTC, datetime, timedelta
+from io import BytesIO
 from pathlib import Path
+
+from PIL import Image
 
 from abyss_wallpaper.cache import ImageCache
 from abyss_wallpaper.config import AppConfig
@@ -65,16 +69,19 @@ class WallpaperPipeline:
         self.setter = setter or default_setter()
 
     def fetch_discoveries(self, source_id: str | None = None, *, offline: bool = False) -> list[Discovery]:
+        return next(self._ranked_batches(source_id, offline=offline), [])
+
+    def _ranked_batches(self, source_id: str | None, *, offline: bool) -> Iterator[list[Discovery]]:
         sources = self._select_sources(source_id, offline=offline)
-        live_sources = [source for source in sources if not source.fallback_only]
-        fallback_sources = [source for source in sources if source.fallback_only]
-        collected: list[Discovery] = []
-        for source in live_sources:
-            collected.extend(self._safe_fetch(source))
-        if not collected:
-            for source in fallback_sources:
-                collected.extend(self._safe_fetch(source))
-        return rank_discoveries(collected, self.config.prefer_underwater)
+        for fallback_only in (False, True):
+            discoveries = [
+                item
+                for source in sources
+                if source.fallback_only == fallback_only
+                for item in self._safe_fetch(source)
+            ]
+            if discoveries:
+                yield rank_discoveries(discoveries, self.config.prefer_underwater)
 
     def _safe_fetch(self, source: Source) -> list[Discovery]:
         try:
@@ -115,32 +122,18 @@ class WallpaperPipeline:
         dry = self.config.dry_run if dry_run is None else dry_run
         should_apply = self.config.set_wallpaper if apply_wallpaper is None else apply_wallpaper
         state = self.store.load()
-        discoveries = self.fetch_discoveries(source_id, offline=offline)
-        if not discoveries:
+        selected = self._prepare_wallpaper(source_id, offline=offline, output=output)
+        if selected is None:
             return UpdateResult(
                 action="noop",
                 discovery=None,
                 wallpaper_path=None,
                 image_hash=None,
-                reason="no discoveries with images were found",
+                reason="no usable wallpaper images were found",
                 dry_run=dry,
                 state=state,
             )
-        discovery = discoveries[0]
-        image_bytes, content_type = self._load_image(discovery)
-        if len(image_bytes) > self.config.max_image_bytes:
-            return UpdateResult(
-                action="noop",
-                discovery=discovery,
-                wallpaper_path=None,
-                image_hash=None,
-                reason=f"image exceeds max_image_bytes ({len(image_bytes)} > {self.config.max_image_bytes})",
-                dry_run=dry,
-                state=state,
-            )
-        cached_path, digest = self.cache.store(discovery, image_bytes, content_type)
-        composed_path = output or (self.config.composed_dir / f"{digest}.jpg")
-        compose_overlay(cached_path, discovery, composed_path, self.config.overlay)
+        discovery, composed_path, digest = selected
         skip_reason = self.store.should_skip(
             state,
             digest,
@@ -182,6 +175,27 @@ class WallpaperPipeline:
 
     def status(self) -> AppState:
         return self.store.load()
+
+    def _prepare_wallpaper(
+        self, source_id: str | None, *, offline: bool, output: Path | None
+    ) -> tuple[Discovery, Path, str] | None:
+        for discoveries in self._ranked_batches(source_id, offline=offline):
+            for discovery in discoveries:
+                try:
+                    image_bytes, content_type = self._load_image(discovery)
+                    if len(image_bytes) > self.config.max_image_bytes:
+                        raise ValueError(f"image exceeds max_image_bytes ({self.config.max_image_bytes})")
+                    with Image.open(BytesIO(image_bytes)) as source_image:
+                        image = source_image.convert("RGBA")
+                except (HttpError, OSError, ValueError, Image.DecompressionBombError) as exc:
+                    LOGGER.warning("Image for %s skipped: %s", discovery.display_title(), exc)
+                    continue
+
+                _, digest = self.cache.store(discovery, image_bytes, content_type)
+                composed_path = output or (self.config.composed_dir / f"{digest}.jpg")
+                compose_overlay(image, discovery, composed_path, self.config.overlay)
+                return discovery, composed_path, digest
+        return None
 
     def _select_sources(self, source_id: str | None, *, offline: bool) -> list[Source]:
         sources = enabled_sources(self.config.sources, include_fallback=True)

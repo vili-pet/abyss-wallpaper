@@ -8,8 +8,7 @@ from abyss_wallpaper.overlay import compose_overlay
 
 
 def test_overlay_writes_jpeg(tmp_path: Path) -> None:
-    source = tmp_path / "src.jpg"
-    Image.new("RGB", (1280, 720), (10, 20, 40)).save(source)
+    source = Image.new("RGB", (1280, 720), (10, 20, 40))
     discovery = Discovery(
         id="x",
         source_id="fixture",

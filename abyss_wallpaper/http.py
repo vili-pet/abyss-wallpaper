@@ -7,6 +7,7 @@ import logging
 import time
 from dataclasses import dataclass, field
 from email.message import Message
+from http.client import HTTPException
 from typing import Any, Protocol
 from urllib.error import HTTPError, URLError
 from urllib.parse import urljoin, urlparse
@@ -69,6 +70,8 @@ class StdHttpClient:
             raise HttpError(f"Failed to fetch {url}: {exc.reason}") from exc
         except TimeoutError as exc:
             raise HttpError(f"Timed out fetching {url}") from exc
+        except HTTPException as exc:
+            raise HttpError(f"Failed to read response for {url}: {exc}") from exc
         LOGGER.debug("Fetched %s (%s bytes)", final_url, len(body))
         return UrlFetch(url=final_url, body=body, content_type=content_type)
 

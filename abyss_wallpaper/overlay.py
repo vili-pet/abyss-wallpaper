@@ -20,12 +20,13 @@ _FONT_CANDIDATES = (
 
 
 def compose_overlay(
-    image_path: Path,
+    image: Image.Image,
     discovery: Discovery,
     output_path: Path,
     overlay: OverlayConfig,
 ) -> Path:
-    image = Image.open(image_path).convert("RGBA")
+    if image.mode != "RGBA":
+        image = image.convert("RGBA")
     if not overlay.enabled:
         output_path.parent.mkdir(parents=True, exist_ok=True)
         image.convert("RGB").save(output_path, format="JPEG", quality=92)

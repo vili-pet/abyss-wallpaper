@@ -15,7 +15,7 @@ from abyss_wallpaper.metadata import (
     strip_html,
 )
 from abyss_wallpaper.models import Discovery
-from abyss_wallpaper.sources.base import source_attribution, source_name
+from abyss_wallpaper.sources.base import SourceError, source_attribution, source_name
 from abyss_wallpaper.sources.htmlutil import extract_images
 
 _NS = {
@@ -35,13 +35,16 @@ class RssSource:
 
     def fetch(self, client: HttpClient, limit: int) -> list[Discovery]:
         xml_text = client.get_text(self.config.url)
-        return parse_rss(
-            xml_text,
-            source_id=self.id,
-            source_name=self.name,
-            attribution=source_attribution(self.config, self.name),
-            limit=limit,
-        )
+        try:
+            return parse_rss(
+                xml_text,
+                source_id=self.id,
+                source_name=self.name,
+                attribution=source_attribution(self.config, self.name),
+                limit=limit,
+            )
+        except ET.ParseError as exc:
+            raise SourceError(f"Malformed RSS/Atom feed: {exc}") from exc
 
 
 def parse_rss(
